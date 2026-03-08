@@ -68,7 +68,6 @@ BeamFormer {
 		if(y>0,{
 		minT = distances.minItem;
 		delays = (distances-minT)/this.speedOfSound;
-		delays = distances/this.speedOfSound;
 		},{
 		maxT = distances.maxItem;
 			delays = (maxT-distances)/this.speedOfSound;
@@ -104,7 +103,7 @@ BeamFormer {
 	*plot {
 		|x=0, y=6, numSpeakers=64, speakerSpacing=0.07, speedOfSound=343, transform|
 		var instance, delayTimes, amps;
-		instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound );
+		instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound);
 		if(transform.isNil, {
 			delayTimes = instance.focalDelays(x,y)
 		},{delayTimes = transform.value(instance.focalDelays(x,y))});

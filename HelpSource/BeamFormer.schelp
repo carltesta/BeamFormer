@@ -1,9 +1,9 @@
 TITLE:: BeamFormer
-summary:: SuperCollider Class for Beamsteering with linear loudspeaker arrays
+summary:: Beamsteering with linear loudspeaker arrays
 categories:: UGens>Multichannel>Panners
 
 DESCRIPTION::
-A convenience Pseudo-Ugen that can take a mono input signal and generate the appropriate delayed signals for multichannel linear loudspeaker arrays
+A convenience Pseudo-Ugen that can take a mono input signal and generate the appropriate delayed signals for beamsteering with linear multichannel loudspeaker arrays
 
 
 CLASSMETHODS::
