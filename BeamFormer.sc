@@ -66,8 +66,8 @@ BeamFormer {
 		var distances, delays, minT, maxT;
 		distances = ( (x - this.speakerDistances).squared + (y - 0).squared ).sqrt;
 		if(y>0,{
-		//minT = distances.minItem;
-		//delays = (distances-minT)/this.speedOfSound;
+		minT = distances.minItem;
+		delays = (distances-minT)/this.speedOfSound;
 		delays = distances/this.speedOfSound;
 		},{
 		maxT = distances.maxItem;
