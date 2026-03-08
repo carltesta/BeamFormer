@@ -63,16 +63,14 @@ BeamFormer {
 
 	focalDelays { |x=0,y=6|
 
-		var distances, delays, minT, maxT;
+		var distances, delays, minT, maxT, normaldelays, focusdelays, sig;
 		distances = ( (x - this.speakerDistances).squared + (y - 0).squared ).sqrt;
-		if(y>0,{
-		minT = distances.minItem;
-		delays = (distances-minT)/this.speedOfSound;
-		},{
-		maxT = distances.maxItem;
-			delays = (maxT-distances)/this.speedOfSound;
-		});
-		^delays;
+		minT = distances.reduce { |a, b| min(a, b) };
+		maxT = distances.reduce { |a, b| max(a, b) };
+		normaldelays = (distances-minT)/this.speedOfSound;
+		focusdelays = (maxT-distances)/this.speedOfSound;
+		sig = Select.kr((y < 0).binaryValue, [normaldelays, focusdelays]);
+		^sig;
 	}
 
 	diffuseDelays { |x=0,y=6|
