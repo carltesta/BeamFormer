@@ -72,11 +72,6 @@ ARGUMENT:: speakerSpacing
 ARGUMENT:: speedOfSound
 (describe argument here)
 
-returns:: (describe returnvalue here)
-
-METHOD:: arSquared
-(describe method here)
-
 ARGUMENT:: in
 (describe argument here)
 
