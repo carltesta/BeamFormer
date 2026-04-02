@@ -86,6 +86,16 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 		var mode = in * weights;
 		^mode*amp;
 	}
+
+	*arBeamPan {
+		|in, amp=1, xPos=0, yPos=0, numSpeakers=64, speakerSpacing=0.07, speedOfSound=343|
+		var instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound);
+		var low = LPF.ar(in, instance.aliasFreq);
+	var high = HPF.ar(in, instance.alisFreq);
+	var beam = instance.arFocal(low, xPos, yPos);
+	var pan = PanX.ar(instance.numSpeakers, high, xPos.linlin((instance.speakerLength/2).neg, instance.speakerLength/2, 0, 1));
+	^beam+pan;
+	}
 /*
 
 	*arSpatialWFS {
@@ -237,6 +247,11 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 	arrayLength {
 		var length = this.speakerDistances.minItem.abs+this.speakerDistances.maxItem+this.speakerSpacing;
 		^length;
+	}
+
+	aliasFreq {
+		var spatialAliasingFreq = this.speedOfSound/this.speakerSpacing*2;
+		^spatialAliasingFreq;
 	}
 
 }
