@@ -54,7 +54,7 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 
 		var instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound );
 		duration = (BeamFormer.getFocalDelays(x, y)[1]*mult).maxItem;
-		conv = PartConv.ar(in, instance.fftSize, instance.irBuf);
+		//conv = PartConv.ar(in, instance.fftSize, instance.irBuf);
 		delay = DelayC.ar(in, duration+1, instance.focalDelays(x,y)*mult, instance.ampWindow());//max delay time is whatever the mult is + 1
 		//you have to compensate in your SynthDef to give the synth enough time to complete the delay resolution otherwise, the sound stops before it's done
 		^delay*amp;
@@ -88,14 +88,25 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 	}
 
 	*arBeamPan {
-		|in, amp=1, xPos=0, yPos=0, numSpeakers=64, speakerSpacing=0.07, speedOfSound=343|
+		|in, xPos=0, yPos=0, amp=1, numSpeakers=64, speakerSpacing=0.07, speedOfSound=343|
 		var instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound);
 		var low = LPF.ar(in, instance.aliasFreq);
-	var high = HPF.ar(in, instance.alisFreq);
-	var beam = instance.arFocal(low, xPos, yPos);
+	var high = HPF.ar(in, instance.aliasFreq);
+	var beam = DelayC.ar(low, instance.speakerLength*4/speedOfSound, instance.focalDelays(xPos,yPos), instance.ampWindow());//max delay time is 2 times the length of the array
 	var pan = PanX.ar(instance.numSpeakers, high, xPos.linlin((instance.speakerLength/2).neg, instance.speakerLength/2, 0, 1));
-	^beam+pan;
+		^(beam+pan)*amp;
 	}
+
+	*arStereoBeam {
+	|inL, inR, rotation=0.5, width=8, xPos=0, fullArrayLength=4.48|
+	var instance = BeamFormer.arrayConf(width, 0.07);
+	var positionL = xPos.linlin((fullArrayLength/2).neg, fullArrayLength/2, 0, 63);
+	var positionR = (xPos+0.5).linlin((fullArrayLength/2).neg, fullArrayLength/2, 0, 63);
+	var stereo = Rotate2.ar(inL, inR, rotation);
+		var beamL = Out.ar(positionL, DelayC.ar(inL, instance.speakerDelays.abs + instance.halfDelay, instance.delays(30.degrad), instance.ampWindow()))*0.5;
+		var beamR = Out.ar(positionR, DelayC.ar(inR, instance.speakerDelays.abs + instance.halfDelay, instance.delays(-30.degrad), instance.ampWindow()))*0.5;
+	^[beamL, beamR];
+}
 /*
 
 	*arSpatialWFS {
