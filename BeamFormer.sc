@@ -7,6 +7,7 @@ Thanks to Ron Kuivila and Bhob Rainey for their help in creating this Class
 */
 
 BeamFormer {
+	classvar gui;
 
 	var <>numSpeakers=64, <>speakerSpacing=0.07, <>speedOfSound=343, <speakerPositions, <speakerDistances, <speakerDelays, <halfDelay, <speakerLength, <lagTime=0.1, <fftSize, <irBuf;
 
@@ -43,8 +44,8 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 	*arFocal { |in, x=0, y=6, amp=1, numSpeakers=64, speakerSpacing=0.07, speedOfSound=343 |
 		var delay;
 		var instance = BeamFormer.arrayConf(numSpeakers, speakerSpacing, speedOfSound );
-		var conv = PartConv.ar(in, instance.fftSize, instance.irBuf);
-		delay = DelayC.ar(in, instance.speakerLength*2/speedOfSound, instance.focalDelays(x,y), instance.ampWindow());//max delay time is 2 times the length of the array
+		//var conv = PartConv.ar(in, instance.fftSize, instance.irBuf);
+		delay = DelayC.ar(in, instance.speakerLength*4/speedOfSound, instance.focalDelays(x,y), instance.ampWindow());//max delay time is 2 times the length of the array
 		^delay*amp;
 	}
 
@@ -183,6 +184,10 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 	//Helper Functions below
 	//The following functions help with testing and or converting values relevant to BeamForming
 
+	*display {
+		gui = Window.new("BeamFormer Display", Rect(0,0,400,400)).front;
+	}
+
 	*speakerTest {
 		|startIndex=0, endIndex=63, waitTime=0.5|
 		var sound = {PinkNoise.ar(-6.dbamp)*EnvGen.kr(Env.perc, 1, doneAction: 2)};
@@ -211,7 +216,7 @@ irSpectrum.do({|buf,n| buf.preparePartConv(irBuffer[n], fftSize)});
 		^wavelength;
 	}
 
-	*anglularWavenumber {
+	*angularWavenumber {
 		|wavelength=0.14, speedOfSound=343|
 		var wavenumber = 2pi/wavelength;//k
 		^wavenumber;
